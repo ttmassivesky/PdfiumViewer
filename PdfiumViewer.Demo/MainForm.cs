@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -12,6 +13,10 @@ namespace PdfiumViewer.Demo
     public partial class MainForm : Form
     {
         private SearchForm _searchForm;
+
+        Timer timer = new Timer();
+
+        private int intervalSeconds = 1;
 
         public MainForm()
         {
@@ -31,7 +36,69 @@ namespace PdfiumViewer.Demo
             _zoom.Text = pdfViewer1.Renderer.Zoom.ToString();
 
             Disposed += (s, e) => pdfViewer1.Document?.Dispose();
+
+            timer.Interval = 1000 * intervalSeconds;
+            timer.Tick += Timer_Tick;
+            timer.Enabled = true;
         }
+
+        private int fieldposY = 0;
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            this.pdfViewer1.Renderer.SetDisplayRectLocation(new Point(0, fieldposY--));
+
+            Debug.WriteLine(this.VerticalScroll.Value);
+
+
+        }
+
+        //public int Page
+        //{
+        //    get
+        //    {
+        //        if (_document == null)
+        //            return 0;
+
+        //        int top = -DisplayRectangle.Top + ClientSize.Height / 2;
+
+        //        int offset = 0;
+
+        //        for (int page = 0; page < _document.PageCount; page++)
+        //        {
+        //            int height = (int)(_maxHeight * _scaleFactor);
+        //            int fullHeight = height + ShadeBorder.Size.Vertical + PageMargin.Vertical;
+
+        //            if (top >= offset && top < offset + fullHeight)
+        //                return page;
+
+        //            offset += fullHeight;
+        //        }
+
+        //        return _document.PageCount - 1;
+        //    }
+        //    set
+        //    {
+        //        if (_document == null)
+        //        {
+        //            SetDisplayRectLocation(new Point(0, 0));
+        //        }
+        //        else
+        //        {
+        //            int top = 0;
+
+        //            for (int page = 0; page < value; page++)
+        //            {
+        //                int height = (int)(_maxHeight * _scaleFactor);
+        //                int fullHeight = height + ShadeBorder.Size.Vertical + PageMargin.Vertical;
+
+        //                top += fullHeight;
+        //            }
+
+        //            SetDisplayRectLocation(new Point(0, -top));
+        //        }
+        //    }
+        //}
 
         private void Renderer_MouseLeave(object sender, EventArgs e)
         {
